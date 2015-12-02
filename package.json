@@ -1,0 +1,19 @@
+{
+  "name": "cygnus_legacy_db_conversion",
+  "version": "0.0.1",
+  "description": "Catalog of biodiversity legacy database transfer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valegrajales/cygnus_legacy_db_conversion.git"
+  },
+  "author": "Valentina Grajales",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/valegrajales/cygnus_legacy_db_conversion/issues"
+  },
+  "homepage": "https://github.com/valegrajales/cygnus_legacy_db_conversion#readme"
+}
