@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/valegrajales/cygnus_legacy_db_conversion/issues"
   },
-  "homepage": "https://github.com/valegrajales/cygnus_legacy_db_conversion#readme"
+  "homepage": "https://github.com/valegrajales/cygnus_legacy_db_conversion#readme",
+  "dependencies": {
+    "async": "^1.5.0",
+    "elasticsearch": "^10.0.1",
+    "lodash": "^3.10.1",
+    "pg": "^4.4.3"
+  }
 }
