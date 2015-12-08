@@ -921,6 +921,14 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					}
 				}
 			},
+			"mapas": {
+				"type": "string",
+				"index": "not_analyzed"
+			},
+			"sonidos": {
+				"type": "string",
+				"index": "not_analyzed"
+			},
 			"atributos": {
 				"properties": {
 					"estadoDeAmenazaSegunCategoriaUICNColombia": {
@@ -942,6 +950,204 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						}
 					},
 					"estadoDeAmenazaSegunCategoriaUICNMundo": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"distribucionGeograficaEnColombia": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"distribucionGeograficaEnMundo": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"distribucionAltitudinal": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"comportamiento": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"reproduccion": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"habitat": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"alimentacion": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"factoresAmenaza": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"medidasConservacion": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"descripcionInvasion": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"clavesTaxonomicas": {
 						"type": "string",
 						"index": "analyzed",
 						"fields": {
@@ -992,6 +1198,190 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"autores": {
+						"type": "nested",
+						"properties": {
+							"contactoId": {
+								"type": "long"
+							},
+							"direccion": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"telefono": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"acronimo": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"persona": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"fax": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"correoElectronico": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"organizacion": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"cargo": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"instrucciones": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"horaInicial": {
+								"type": "date"
+							},
+							"horaFinal": {
+								"type": "date"
+							}
+						}
+					},
+					"colaboradores": {
+						"type": "nested",
+						"properties": {
+							"contactoId": {
+								"type": "long"
+							},
+							"direccion": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"telefono": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"acronimo": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"persona": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"fax": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"correoElectronico": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"organizacion": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"cargo": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"instrucciones": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"horaInicial": {
+								"type": "date"
+							},
+							"horaFinal": {
+								"type": "date"
 							}
 						}
 					},
