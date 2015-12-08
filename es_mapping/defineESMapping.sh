@@ -895,6 +895,222 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						}
 					}
 				}
+			},
+			"imagenes": {
+				"type": "nested",
+				"properties": {
+					"license": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"rights": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"rightsHolder": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"source": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"url": {
+						"type": "string",
+						"index": "not_analyzed"
+					}
+				}
+			},
+			"atributos": {
+				"properties": {
+					"estadoDeAmenazaSegunCategoriaUICNColombia": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"estadoDeAmenazaSegunCategoriaUICNMundo": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"creditosEspecificos": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"otrosRecursosEnInternet": {
+						"type": "string",
+						"index": "analyzed",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					},
+					"referenciasBibliograficas": {
+						"type": "nested",
+						"properties": {
+							"citacionId": {
+								"type": "long"
+							},
+							"sistemaclasificacionInd": {
+								"type": "boolean"
+							},
+							"fecha": {
+								"type":   "date",
+		          	"format": "yyyy"
+							},
+							"documentoTitulo": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"autor": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"editor": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"publicador": {
+								"type": "string",
+								"index": "analyzed",
+								"fields": {
+									"untouched": {
+										"type": "string",
+										"index": "not_analyzed"
+									},
+									"exactWords": {
+										"type": "string",
+										"analyzer": "string_lowercase"
+									},
+									"spanish": {
+										"type": "string",
+										"analyzer": "spanish_search_analyzer"
+									}
+								}
+							},
+							"editorial": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"lugarPublicacion": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"edicionVersion": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"volumen": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"serie": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"numero": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"paginas": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"hipervinculo": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"fechaActualizacion": {
+								"type": "date"
+							},
+							"fechaConsulta": {
+								"type": "date"
+							},
+							"otros": {
+								"type": "string",
+								"index": "not_analyzed"
+							}
+						}
+					}
+				}
 			}
 		}
 	}

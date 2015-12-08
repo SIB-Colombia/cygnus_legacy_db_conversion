@@ -95,7 +95,8 @@ client.connect(function(err) {
 		INNER JOIN "public".ciudadmunicipio ON "public".ciudadmunicipio.pais_abreviatura = "public".subadministrativa.pais_abreviatura AND "public".ciudadmunicipio.sub_abreviatura = "public".subadministrativa.sub_abreviatura AND "public".referentegeografico.id_pais = "public".ciudadmunicipio.pais_abreviatura AND "public".referentegeografico.id_sub = "public".ciudadmunicipio.sub_abreviatura AND "public".referentegeografico.id_cm = "public".ciudadmunicipio.ciudad_municipio_abreviatura \
 		WHERE \
 		"public".pcaat_ce.taxonnombre IS NOT NULL AND \
-		"public".pcaat_ce.taxoncompleto IS NOT NULL \
+		"public".pcaat_ce.taxoncompleto IS NOT NULL AND \
+		"public".catalogoespecies.catalogoespecies_id = 158 \
 		ORDER BY catalogoespecies_id', function(err, result) {
 		if(err) {
 			return console.error('error running query', err);
@@ -327,6 +328,124 @@ client.connect(function(err) {
 						}
 						callback();
 					});
+				},
+				getAtributos: function(callback) {
+					client.query('SELECT \
+						"public".atributovalor."id" AS "idFinalAtributo", \
+						"public".atributovalor.valor AS "valorAtributo", \
+						av_etiqueta."id" AS "idAtributo", \
+						av_etiqueta.valor AS "nombreAtributo" \
+						FROM \
+						"public".catalogoespecies \
+						INNER JOIN "public".ce_atributovalor ON "public".ce_atributovalor.catalogoespecies_id = "public".catalogoespecies.catalogoespecies_id \
+						INNER JOIN "public".atributovalor ON "public".ce_atributovalor.valor = "public".atributovalor."id" \
+						INNER JOIN "public".atributovalor AS av_etiqueta ON "public".ce_atributovalor.etiqueta = av_etiqueta."id" \
+						WHERE \
+						"public".catalogoespecies.catalogoespecies_id = '+n.catalogoespecies_id, function(err, result) {
+						if((typeof result !== 'undefined')) {
+							if(result.rows.length > 0) {
+								// this registry has attributes
+								ficha['atributos'] = {};
+								_.forEach(result.rows, function(n2,key2) {
+									if(n2.idAtributo === 3) {
+										// Este id corresponde a estado de amenaza segun categoria UICN en Colombia
+										if((typeof ficha.atributos.estadoDeAmenazaSegunCategoriaUICNColombia) === 'undefined') {
+											ficha.atributos.estadoDeAmenazaSegunCategoriaUICNColombia = [];
+										}
+										ficha.atributos.estadoDeAmenazaSegunCategoriaUICNColombia.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 436) {
+										// Este id corresponde a Créditos específicos}
+										if((typeof ficha.atributos.creditosEspecificos) === 'undefined') {
+											ficha.atributos.creditosEspecificos = [];
+										}
+										ficha.atributos.creditosEspecificos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 18) {
+										// Este id corresponde a Otros recursos en internet
+										if((typeof ficha.atributos.otrosRecursosEnInternet) === 'undefined') {
+											ficha.atributos.otrosRecursosEnInternet = [];
+										}
+										ficha.atributos.otrosRecursosEnInternet.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 39) {
+										// Este id corresponde a Imagen
+										if((typeof ficha.imagenes) === 'undefined') {
+											ficha.imagenes = [];
+										}
+										ficha.imagenes.push({
+											source: 'legacy',
+											url: n2.valorAtributo
+										});
+									} else if (n2.idAtributo === 28) {
+										// Este id corresponde a Referencte bibliográfica
+										if((typeof ficha.tempReferenciasBibliograficas) === 'undefined') {
+											ficha.tempReferenciasBibliograficas = [];
+										}
+										ficha.tempReferenciasBibliograficas.push(n2.valorAtributo);
+									}
+								});
+							}
+						}
+						callback();
+					});
+				},
+				getAtributosReferenciasBibliograficas: function(callback) {
+					if((typeof ficha.tempReferenciasBibliograficas !== 'undefined')) {
+						client.query('SELECT \
+							"public".citacion.citacion_id, \
+							"public".citacion.sistemaclasificacion_ind, \
+							"public".citacion.autor, \
+							"public".citacion.fecha, \
+							"public".citacion.documento_titulo, \
+							"public".citacion.editor, \
+							"public".citacion.publicador, \
+							"public".citacion.editorial, \
+							"public".citacion.lugar_publicacion, \
+							"public".citacion.edicion_version, \
+							"public".citacion.volumen, \
+							"public".citacion.serie, \
+							"public".citacion.numero, \
+							"public".citacion.paginas, \
+							"public".citacion.hipervinculo, \
+							"public".citacion.fecha_actualizacion, \
+							"public".citacion.fecha_consulta, \
+							"public".citacion.otros \
+							FROM \
+							"public".citacion \
+							WHERE \
+							"public".citacion.citacion_id IN ('+ficha.tempReferenciasBibliograficas+')', function(err, result) {
+							if((typeof result !== 'undefined')) {
+								if(result.rows.length > 0) {
+									ficha.atributos.referenciasBibliograficas = [];
+									_.forEach(result.rows, function(n2,key2) {
+										ficha.atributos.referenciasBibliograficas.push({
+											citacionId: n2.citacion_id,
+											sistemaclasificacionInd: n2.sistemaclasificacion_ind,
+											fecha: n2.fecha,
+											documentoTitulo: n2.documento_titulo,
+											autor: n2.autor,
+											editor: n2.editor,
+											publicador: n2.publicador,
+											editorial: n2.editorial,
+											lugarPublicacion: n2.lugar_publicacion,
+											edicionVersion: n2.edicion_version,
+											volumen: n2.volumen,
+											serie: n2.serie,
+											numero: n2.numero,
+											paginas: n2.paginas,
+											hipervinculo: n2.hipervinculo,
+											fechaActualizacion: n2.fecha_actualizacion,
+											fechaConsulta: n2.fecha_consulta,
+											otros: n2.otros
+										});
+									});
+								}
+							}
+							ficha.tempReferenciasBibliograficas = null;
+							delete(ficha.tempReferenciasBibliograficas);
+							callback();
+						});
+					} else {
+						callback();
+					}
 				}
 			}, function(err) {
 				if(err) {
