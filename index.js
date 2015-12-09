@@ -4,8 +4,13 @@
 var pg = require('pg');
 var _ = require('lodash');
 var async = require('async');
+var elasticsearch = require('elasticsearch');
 
 var conString = 'postgres://postgres:h4s1p8k2@localhost/catalogo';
+
+var clientElastic = new elasticsearch.Client({
+  host: 'localhost:9200'
+});
 
 var client = new pg.Client(conString);
 client.connect(function(err) {
@@ -95,8 +100,7 @@ client.connect(function(err) {
 		INNER JOIN "public".ciudadmunicipio ON "public".ciudadmunicipio.pais_abreviatura = "public".subadministrativa.pais_abreviatura AND "public".ciudadmunicipio.sub_abreviatura = "public".subadministrativa.sub_abreviatura AND "public".referentegeografico.id_pais = "public".ciudadmunicipio.pais_abreviatura AND "public".referentegeografico.id_sub = "public".ciudadmunicipio.sub_abreviatura AND "public".referentegeografico.id_cm = "public".ciudadmunicipio.ciudad_municipio_abreviatura \
 		WHERE \
 		"public".pcaat_ce.taxonnombre IS NOT NULL AND \
-		"public".pcaat_ce.taxoncompleto IS NOT NULL AND \
-		"public".catalogoespecies.catalogoespecies_id = 464 \
+		"public".pcaat_ce.taxoncompleto IS NOT NULL \
 		ORDER BY catalogoespecies_id', function(err, result) {
 		if(err) {
 			return console.error('error running query', err);
@@ -353,12 +357,36 @@ client.connect(function(err) {
 											ficha.atributos.estadoDeAmenazaSegunCategoriaUICNColombia = [];
 										}
 										ficha.atributos.estadoDeAmenazaSegunCategoriaUICNColombia.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 4) {
+										// Este id corresponde a estado de amenaza segun categoria UICN en el mundo
+										if((typeof ficha.atributos.estadoDeAmenazaSegunCategoriaUICNMundo) === 'undefined') {
+											ficha.atributos.estadoDeAmenazaSegunCategoriaUICNMundo = [];
+										}
+										ficha.atributos.estadoDeAmenazaSegunCategoriaUICNMundo.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 5) {
+										// Este id corresponde a estado CITES
+										if((typeof ficha.atributos.estadoCITES) === 'undefined') {
+											ficha.atributos.estadoCITES = [];
+										}
+										ficha.atributos.estadoCITES.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 436) {
 										// Este id corresponde a Créditos específicos}
 										if((typeof ficha.atributos.creditosEspecificos) === 'undefined') {
 											ficha.atributos.creditosEspecificos = [];
 										}
 										ficha.atributos.creditosEspecificos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 437) {
+										// Este id corresponde a metadatos
+										if((typeof ficha.atributos.metadatos) === 'undefined') {
+											ficha.atributos.metadatos = [];
+										}
+										ficha.atributos.metadatos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 7) {
+										// Este id corresponde a estado actual de la población
+										if((typeof ficha.atributos.estadoActualPoblacion) === 'undefined') {
+											ficha.atributos.estadoActualPoblacion = [];
+										}
+										ficha.atributos.estadoActualPoblacion.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 8) {
 										// Este id corresponde a distribucion geografica en Colombia
 										if((typeof ficha.atributos.distribucionGeograficaEnColombia) === 'undefined') {
@@ -371,12 +399,48 @@ client.connect(function(err) {
 											ficha.atributos.distribucionGeograficaEnMundo = [];
 										}
 										ficha.atributos.distribucionGeograficaEnMundo.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 149) {
+										// Este id corresponde a registros biologicos
+										if((typeof ficha.atributos.registrosBiologicos) === 'undefined') {
+											ficha.atributos.registrosBiologicos = [];
+										}
+										ficha.atributos.registrosBiologicos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 150) {
+										// Este id corresponde a información de tipos
+										if((typeof ficha.atributos.informacionTipos) === 'undefined') {
+											ficha.atributos.informacionTipos = [];
+										}
+										ficha.atributos.informacionTipos.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 26) {
 										// Este id corresponde a comportamiento
 										if((typeof ficha.atributos.comportamiento) === 'undefined') {
 											ficha.atributos.comportamiento = [];
 										}
 										ficha.atributos.comportamiento.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 14) {
+										// Este id corresponde a información de usos
+										if((typeof ficha.atributos.informacionUsos) === 'undefined') {
+											ficha.atributos.informacionUsos = [];
+										}
+										ficha.atributos.informacionUsos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 15) {
+										// Este id corresponde a información de alerta
+										if((typeof ficha.atributos.informacionAlerta) === 'undefined') {
+											ficha.atributos.informacionAlerta = [];
+										}
+										ficha.atributos.informacionAlerta.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 16) {
+										// Este id corresponde a medidas de conservación
+										if((typeof ficha.atributos.medidasConservacion) === 'undefined') {
+											ficha.atributos.medidasConservacion = [];
+										}
+										ficha.atributos.medidasConservacion.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 30) {
+										// Este id corresponde a etimologia del nombre cientifico
+										if((typeof ficha.atributos.etimologiaNombreCientifico) === 'undefined') {
+											ficha.atributos.etimologiaNombreCientifico = [];
+										}
+										ficha.atributos.etimologiaNombreCientifico.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 35) {
 										// Este id corresponde a reproduccion
 										if((typeof ficha.atributos.reproduccion) === 'undefined') {
@@ -389,6 +453,12 @@ client.connect(function(err) {
 											ficha.atributos.habitat = [];
 										}
 										ficha.atributos.habitat.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 32) {
+										// Este id corresponde a vocalizaciones
+										if((typeof ficha.atributos.vocalizaciones) === 'undefined') {
+											ficha.atributos.vocalizaciones = [];
+										}
+										ficha.atributos.vocalizaciones.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 22) {
 										// Este id corresponde a alimentacion
 										if((typeof ficha.atributos.alimentacion) === 'undefined') {
@@ -419,18 +489,90 @@ client.connect(function(err) {
 											ficha.atributos.descripcionInvasion = [];
 										}
 										ficha.atributos.descripcionInvasion.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 3530) {
+										// Este id corresponde a impactos
+										if((typeof ficha.atributos.impactos) === 'undefined') {
+											ficha.atributos.impactos = [];
+										}
+										ficha.atributos.impactos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 3531) {
+										// Este id corresponde a mecanismos de control
+										if((typeof ficha.atributos.mecanismosControl) === 'undefined') {
+											ficha.atributos.mecanismosControl = [];
+										}
+										ficha.atributos.mecanismosControl.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 6784) {
+										// Este id corresponde a invasora
+										if((typeof ficha.atributos.invasora) === 'undefined') {
+											ficha.atributos.invasora = [];
+										}
+										ficha.atributos.invasora.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 32210) {
+										// Este id corresponde a sinonimos
+										if((typeof ficha.atributos.sinonimos) === 'undefined') {
+											ficha.atributos.sinonimos = [];
+										}
+										ficha.atributos.sinonimos.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 903) {
+										// Este id corresponde a habito
+										if((typeof ficha.atributos.habito) === 'undefined') {
+											ficha.atributos.habito = [];
+										}
+										ficha.atributos.habito.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 904) {
+										// Este id corresponde a origen
+										if((typeof ficha.atributos.origen) === 'undefined') {
+											ficha.atributos.origen = [];
+										}
+										ficha.atributos.origen.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 12) {
+										// Este id corresponde a descripcion taxonomica
+										if((typeof ficha.atributos.descripcionTaxonomica) === 'undefined') {
+											ficha.atributos.descripcionTaxonomica = [];
+										}
+										ficha.atributos.descripcionTaxonomica.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 16) {
 										// Este id corresponde a medidas de conservacion
 										if((typeof ficha.atributos.medidasConservacion) === 'undefined') {
 											ficha.atributos.medidasConservacion = [];
 										}
 										ficha.atributos.medidasConservacion.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 17) {
+										// Este id corresponde a ecologia
+										if((typeof ficha.atributos.ecologia) === 'undefined') {
+											ficha.atributos.ecologia = [];
+										}
+										ficha.atributos.ecologia.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 36) {
+										// Este id corresponde a descripcion general
+										if((typeof ficha.atributos.descripcionGeneral) === 'undefined') {
+											ficha.atributos.descripcionGeneral = [];
+										}
+										ficha.atributos.descripcionGeneral.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 10) {
+										// Este id corresponde a ecosistema
+										if((typeof ficha.atributos.ecosistema) === 'undefined') {
+											ficha.atributos.ecosistema = [];
+										}
+										ficha.atributos.ecosistema.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 11) {
+										// Este id corresponde a regiones naturales
+										if((typeof ficha.atributos.regionesNaturales) === 'undefined') {
+											ficha.atributos.regionesNaturales = [];
+										}
+										ficha.atributos.regionesNaturales.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 27) {
 										// Este id corresponde a claves taxonomicas
 										if((typeof ficha.atributos.clavesTaxonomicas) === 'undefined') {
 											ficha.atributos.clavesTaxonomicas = [];
 										}
 										ficha.atributos.clavesTaxonomicas.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 21) {
+										// Este id corresponde a recursos multimedia
+										if((typeof ficha.atributos.recursosMultimedia) === 'undefined') {
+											ficha.atributos.recursosMultimedia = [];
+										}
+										ficha.atributos.recursosMultimedia.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 39) {
 										// Este id corresponde a Imagen
 										if((typeof ficha.imagenes) === 'undefined') {
@@ -446,6 +588,12 @@ client.connect(function(err) {
 											ficha.mapas = [];
 										}
 										ficha.mapas.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 41) {
+										// Este id corresponde a videos
+										if((typeof ficha.videos) === 'undefined') {
+											ficha.videos = [];
+										}
+										ficha.videos.push(n2.valorAtributo);
 									} else if (n2.idAtributo === 42) {
 										// Este id corresponde a sonido
 										if((typeof ficha.sonidos) === 'undefined') {
@@ -470,6 +618,18 @@ client.connect(function(err) {
 											ficha.tempColaboradores = [];
 										}
 										ficha.tempColaboradores.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 20) {
+										// Este id corresponde a editores
+										if((typeof ficha.tempEditores) === 'undefined') {
+											ficha.tempEditores = [];
+										}
+										ficha.tempEditores.push(n2.valorAtributo);
+									} else if (n2.idAtributo === 25) {
+										// Este id corresponde a revisores
+										if((typeof ficha.tempRevisores) === 'undefined') {
+											ficha.tempRevisores = [];
+										}
+										ficha.tempRevisores.push(n2.valorAtributo);
 									}
 								});
 							}
@@ -632,18 +792,125 @@ client.connect(function(err) {
 					} else {
 						callback();
 					}
+				},
+				getAtributosEditores: function(callback) {
+					if((typeof ficha.tempEditores !== 'undefined')) {
+						client.query('SELECT \
+							"public".contactos.contacto_id, \
+							"public".contactos.direccion, \
+							"public".contactos.telefono, \
+							"public".contactos.acronimo, \
+							"public".contactos.persona, \
+							"public".contactos.fax, \
+							"public".contactos.correo_electronico, \
+							"public".contactos.organizacion, \
+							"public".contactos.cargo, \
+							"public".contactos.instrucciones, \
+							"public".contactos.hora_inicial, \
+							"public".contactos.hora_final \
+							FROM \
+							"public".contactos \
+							WHERE \
+							"public".contactos.contacto_id IN ('+ficha.tempEditores+')', function(err, result) {
+							if((typeof result !== 'undefined')) {
+								if(result.rows.length > 0) {
+									ficha.atributos.editores = [];
+									_.forEach(result.rows, function(n2,key2) {
+										ficha.atributos.editores.push({
+											contactoId: n2.contacto_id,
+											direccion: n2.direccion,
+											telefono: n2.telefono,
+											acronimo: n2.acronimo,
+											persona: n2.persona,
+											fax: n2.fax,
+											correoElectronico: n2.correo_electronico,
+											organizacion: n2.organizacion,
+											cargo: n2.cargo,
+											instrucciones: n2.instrucciones,
+											horaInicial: n2.hora_inicial,
+											horaFinal: n2.hora_final
+										});
+									});
+								}
+							}
+							ficha.tempEditores = null;
+							delete(ficha.tempEditores);
+							callback();
+						});
+					} else {
+						callback();
+					}
+				},
+				getAtributosRevisores: function(callback) {
+					if((typeof ficha.tempRevisores !== 'undefined')) {
+						client.query('SELECT \
+							"public".contactos.contacto_id, \
+							"public".contactos.direccion, \
+							"public".contactos.telefono, \
+							"public".contactos.acronimo, \
+							"public".contactos.persona, \
+							"public".contactos.fax, \
+							"public".contactos.correo_electronico, \
+							"public".contactos.organizacion, \
+							"public".contactos.cargo, \
+							"public".contactos.instrucciones, \
+							"public".contactos.hora_inicial, \
+							"public".contactos.hora_final \
+							FROM \
+							"public".contactos \
+							WHERE \
+							"public".contactos.contacto_id IN ('+ficha.tempRevisores+')', function(err, result) {
+							if((typeof result !== 'undefined')) {
+								if(result.rows.length > 0) {
+									ficha.atributos.revisores = [];
+									_.forEach(result.rows, function(n2,key2) {
+										ficha.atributos.revisores.push({
+											contactoId: n2.contacto_id,
+											direccion: n2.direccion,
+											telefono: n2.telefono,
+											acronimo: n2.acronimo,
+											persona: n2.persona,
+											fax: n2.fax,
+											correoElectronico: n2.correo_electronico,
+											organizacion: n2.organizacion,
+											cargo: n2.cargo,
+											instrucciones: n2.instrucciones,
+											horaInicial: n2.hora_inicial,
+											horaFinal: n2.hora_final
+										});
+									});
+								}
+							}
+							ficha.tempRevisores = null;
+							delete(ficha.tempRevisores);
+							callback();
+						});
+					} else {
+						callback();
+					}
+				},
+				saveToElasticSearch: function(callback) {
+					if((typeof ficha !== 'undefined')) {
+						clientElastic.create({
+							index: 'biodiversity',
+							type: 'catalog',
+							body: ficha
+						}, function (error, response) {
+							callback();
+						});
+					} else {
+						callback();
+					}
 				}
 			}, function(err) {
 				if(err) {
 					console.log("Error saving data");
 				} else {
 					// Continue data processing
-					console.log(ficha);
+					//console.log(ficha);
 					callback();
 				}
 			})
-			//console.log(row);
-			//callback();
 		}, function(err) {
 			if(err) {
 				console.log("Error saving data");
