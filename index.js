@@ -6,7 +6,7 @@ var _ = require('lodash');
 var async = require('async');
 var elasticsearch = require('elasticsearch');
 
-var conString = 'postgres://postgres:h4s1p8k2@localhost/catalogo';
+var conString = 'postgres://postgres:'+process.env.POSTGRES_PASSWORD+'@'+process.env.POSTGRES_SERVER+'/catalogo';
 
 var clientElastic = new elasticsearch.Client({
   host: 'localhost:9200'
@@ -888,6 +888,38 @@ client.connect(function(err) {
 					} else {
 						callback();
 					}
+				},
+				includeExternalImages: function(callback) {
+					client.query("SELECT \
+						\"public\".external_images.\"id\", \
+						\"public\".external_images.taxonnombre, \
+						\"public\".external_images.imageurl, \
+						\"public\".external_images.imagelicense, \
+						\"public\".external_images.imagerights, \
+						\"public\".external_images.imagerightsholder, \
+						\"public\".external_images.imagesource \
+						FROM \
+						\"public\".external_images \
+						WHERE \
+						lower(trim(\"public\".external_images.taxonnombre)) = lower(trim('"+ficha.taxonNombre+"'))", function(err, result) {
+						if((typeof result !== 'undefined')) {
+							if(result.rows.length > 0) {
+								if((typeof ficha.imagenes) === 'undefined') {
+									ficha.imagenes = [];
+								}
+								_.forEach(result.rows, function(n2,key2) {
+									ficha.imagenes.push({
+										license: n2.imagelicense,
+										rights: n2.imagerights,
+										rightsHolder: n2.imagerightsholder,
+										source: n2.imagesource,
+										url: n2.imageurl
+									});
+								});
+							}
+						}
+						callback();
+					});
 				},
 				saveToElasticSearch: function(callback) {
 					if((typeof ficha !== 'undefined')) {

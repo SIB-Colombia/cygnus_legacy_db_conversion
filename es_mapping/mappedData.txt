@@ -1,0 +1,45 @@
+1	Distribucion Altitudinal YA
+3	UICN Colombia YA
+4 UICN En el mundo YA
+5	Estado CITES
+6	Factores de amenaza YA
+7 Estado actual de la población YA
+8	Distribucion geografica en Colombia YA
+10	Ecosistema YA
+11	Región natural YA
+12	Descripcion Taxonomica YA
+14	Información de usos YA
+15	Información de alerta YA
+16	Medidas de conservación YA
+17	Ecología YA
+18	Otros recursos en internet YA
+19	Autores YA
+20	Editores YA
+21	Recursos multimedia YA
+22	Alimentacion YA
+24	Colaboradores YA
+25	Revisores YA
+26	Comportamiento YA
+27	Claves taxonómicas YA
+28	Referencias bibliograficas YA
+30	Etimologia del nombre científico YA
+31	Hábitat YA
+32	Vocalizaciones YA
+35	Reproducción YA
+36	Descripcion general YA
+39	Imagen YA
+40	Mapas YA
+41	Videos YA
+42	Sonidos YA
+148	Distribucion geografica en el mundo YA
+149	Registros biológicos YA
+150	Información de tipos YA
+436	Creditos especificos YA
+437	Metadatos YA
+903	Habito YA
+904 Origen YA
+3529	Descripcion de la invasión YA
+3530	Impactos YA
+3531	Mecanismos de control YA
+6784	Invasora YA
+32210	Sinonimos YA

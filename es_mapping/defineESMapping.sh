@@ -5,11 +5,16 @@ curl -XPUT 'http://localhost:9200/biodiversity/' -d '
 			"filter": {
 				"nGram_filter": {
 					"type": "nGram",
-					"min_gram": "2",
-					"max_gram": "20",
-					"token_chars": ["letter", "digit", "punctuation", "symbol"]
+					"min_gram": 2,
+					"max_gram": 20,
+					"token_chars": [
+						"letter",
+						"digit",
+						"punctuation",
+						"symbol"
+					]
 				},
-				"snowball": {
+				"snowball_spanish": {
 					"type": "snowball",
 					"language": "Spanish"
 				},
@@ -30,19 +35,48 @@ curl -XPUT 'http://localhost:9200/biodiversity/' -d '
 				"my_ascii_folding": {
 					"type" : "asciifolding",
 					"preserve_original": true
-				}
+				},
+				"spanish_stop": {
+          "type": "stop",
+          "stopwords": "_spanish_"
+        },
+        "spanish_stemmer": {
+          "type": "stemmer",
+          "language": "light_spanish"
+        }
 			},
 			"analyzer": {
-				"spanish_ngram_analyzer": {
+				"nGram_analyzer": {
 					"type": "custom",
 					"tokenizer": "whitespace",
-					"filter": ["lowercase", "stopwords", "my_ascii_folding", "nGram_filter"]
+					"filter": [
+						"lowercase",
+						"asciifolding",
+						"nGram_filter"
+					]
 				},
-				"spanish_search_analyzer": {
+				"whitespace_analyzer": {
+					"type": "custom",
+					"tokenizer": "whitespace",
+					"filter": [
+						"lowercase",
+						"asciifolding"
+					]
+				},
+				"spanish": {
 					"type": "custom",
 					"tokenizer": "standard",
-					"filter": ["lowercase", "stopwords", "my_ascii_folding", "snowball", "worddelimiter"]
+					"filter": ["lowercase", "stopwords", "my_ascii_folding", "snowball_spanish", "worddelimiter"]
 				},
+				"spanish_search_analyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "spanish_stop",
+            "my_ascii_folding",
+            "snowball_spanish"
+          ]
+        },
 				"my_shingle_analyzer": {
 					"type": "custom",
 					"tokenizer": "standard",
@@ -98,6 +132,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			"taxonNombre": {
 				"type": "string",
 				"index": "analyzed",
+				"analyzer": "spanish_search_analyzer",
 				"fields" : {
 					"untouched": {
 						"type": "string",
@@ -111,17 +146,17 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						"type": "string",
 						"analyzer": "spanish_search_analyzer"
 					},
-					"suggest": {
-						"type": "completion",
-						"analyzer": "simple",
-						"search_analyzer": "simple",
-						"payloads": true
+					"ngram": {
+						"type": "string",
+						"analyzer": "nGram_analyzer",
+						"search_analyzer": "whitespace_analyzer"
 					}
 				}
 			},
 			"taxonCompleto": {
 				"type": "string",
 				"index": "analyzed",
+				"analyzer": "spanish_search_analyzer",
 				"fields" : {
 					"untouched": {
 						"type": "string",
@@ -135,11 +170,10 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						"type": "string",
 						"analyzer": "spanish_search_analyzer"
 					},
-					"suggest": {
-						"type": "completion",
-						"analyzer": "simple",
-						"search_analyzer": "simple",
-						"payloads": true
+					"ngram": {
+						"type": "string",
+						"analyzer": "nGram_analyzer",
+						"search_analyzer": "whitespace_analyzer"
 					}
 				}
 			},
@@ -148,6 +182,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"reino": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -160,18 +195,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"filo": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -184,18 +214,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"clase": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -208,18 +233,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"orden": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -232,18 +252,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"familia": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -256,18 +271,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"genero": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -280,18 +290,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"epitetoEspecifico": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -304,18 +309,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"especie": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -328,12 +328,6 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					}
@@ -346,6 +340,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			"autor": {
 				"type": "string",
 				"index": "analyzed",
+				"analyzer": "spanish_search_analyzer",
 				"fields": {
 					"untouched": {
 						"type": "string",
@@ -358,12 +353,6 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"spanish": {
 						"type": "string",
 						"analyzer": "spanish_search_analyzer"
-					},
-					"suggest": {
-						"type": "completion",
-						"analyzer": "simple",
-						"search_analyzer": "simple",
-						"payloads": true
 					}
 				}
 			},
@@ -386,6 +375,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"nombre": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -421,6 +411,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"documentoTitulo": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -439,6 +430,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"autor": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -461,6 +453,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"publicador": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -549,6 +542,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"acronimo": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -567,6 +561,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"persona": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -593,6 +588,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"organizacion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -681,6 +677,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			"listaNombresComunes": {
 				"type": "string",
 				"index": "analyzed",
+				"analyzer": "spanish_search_analyzer",
 				"fields": {
 					"untouched": {
 						"type": "string",
@@ -694,11 +691,10 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						"type": "string",
 						"analyzer": "spanish_search_analyzer"
 					},
-					"suggest": {
-						"type": "completion",
-						"analyzer": "simple",
-						"search_analyzer": "simple",
-						"payloads": true
+					"ngram": {
+						"type": "string",
+						"analyzer": "nGram_analyzer",
+						"search_analyzer": "whitespace_analyzer"
 					}
 				}
 			},
@@ -711,6 +707,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"tesauroNombre": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -723,18 +720,13 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"spanish": {
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
-							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
 							}
 						}
 					},
 					"grupoHumano": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -757,6 +749,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"regionesGeograficas": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -779,6 +772,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"tesauroCompleto": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields" : {
 							"untouched": {
 								"type": "string",
@@ -801,6 +795,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"departamentos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -814,17 +809,17 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
 							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
+							"ngram": {
+								"type": "string",
+								"analyzer": "nGram_analyzer",
+								"search_analyzer": "whitespace_analyzer"
 							}
 						}
 					},
 					"regionesNaturales": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -838,17 +833,17 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
 							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
+							"ngram": {
+								"type": "string",
+								"analyzer": "nGram_analyzer",
+								"search_analyzer": "whitespace_analyzer"
 							}
 						}
 					},
 					"corporacionesAutonomasRegionales": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -862,17 +857,17 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
 							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
+							"ngram": {
+								"type": "string",
+								"analyzer": "nGram_analyzer",
+								"search_analyzer": "whitespace_analyzer"
 							}
 						}
 					},
 					"organizaciones": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -886,11 +881,10 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"type": "string",
 								"analyzer": "spanish_search_analyzer"
 							},
-							"suggest": {
-								"type": "completion",
-								"analyzer": "simple",
-								"search_analyzer": "simple",
-								"payloads": true
+							"ngram": {
+								"type": "string",
+								"analyzer": "nGram_analyzer",
+								"search_analyzer": "whitespace_analyzer"
 							}
 						}
 					}
@@ -938,6 +932,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"estadoDeAmenazaSegunCategoriaUICNColombia": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -956,6 +951,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"estadoDeAmenazaSegunCategoriaUICNMundo": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -974,6 +970,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"distribucionGeograficaEnColombia": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -992,6 +989,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"distribucionGeograficaEnMundo": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1010,6 +1008,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"distribucionAltitudinal": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1028,6 +1027,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"comportamiento": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1046,6 +1046,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"reproduccion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1064,6 +1065,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"estadoActualPoblacion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1082,6 +1084,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"estadoCITES": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1100,6 +1103,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"vocalizaciones": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1118,6 +1122,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"etimologiaNombreCientifico": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1136,6 +1141,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"habitat": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1154,6 +1160,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"habito": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1172,6 +1179,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"alimentacion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1190,6 +1198,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"impactos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1208,6 +1217,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"informacionAlerta": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1226,6 +1236,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"informacionTipos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1244,6 +1255,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"informacionUsos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1262,6 +1274,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"invasora": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1280,6 +1293,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"mecanismosControl": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1298,6 +1312,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"medidasConservacion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1320,6 +1335,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"origen": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1338,24 +1354,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"factoresAmenaza": {
 						"type": "string",
 						"index": "analyzed",
-						"fields": {
-							"untouched": {
-								"type": "string",
-								"index": "not_analyzed"
-							},
-							"exactWords": {
-								"type": "string",
-								"analyzer": "string_lowercase"
-							},
-							"spanish": {
-								"type": "string",
-								"analyzer": "spanish_search_analyzer"
-							}
-						}
-					},
-					"medidasConservacion": {
-						"type": "string",
-						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1374,6 +1373,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"descripcionInvasion": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1392,6 +1392,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"descripcionGeneral": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1410,6 +1411,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"descripcionTaxonomica": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1428,6 +1430,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"ecologia": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1446,6 +1449,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"ecosistema": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1464,6 +1468,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"clavesTaxonomicas": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1482,6 +1487,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"creditosEspecificos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1500,6 +1506,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"otrosRecursosEnInternet": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1518,6 +1525,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"regionesNaturales": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1536,6 +1544,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"registrosBiologicos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1554,6 +1563,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					"sinonimos": {
 						"type": "string",
 						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
 						"fields": {
 							"untouched": {
 								"type": "string",
@@ -1590,6 +1600,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"acronimo": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1608,6 +1619,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"persona": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1634,6 +1646,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"organizacion": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1682,6 +1695,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"acronimo": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1700,6 +1714,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"persona": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1726,6 +1741,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"organizacion": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1774,6 +1790,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"acronimo": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1792,6 +1809,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"persona": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1818,6 +1836,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"organizacion": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1866,6 +1885,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"acronimo": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1884,6 +1904,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"persona": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1910,6 +1931,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"organizacion": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1957,6 +1979,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"documentoTitulo": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1975,6 +1998,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"autor": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
@@ -1997,6 +2021,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 							"publicador": {
 								"type": "string",
 								"index": "analyzed",
+								"analyzer": "spanish_search_analyzer",
 								"fields": {
 									"untouched": {
 										"type": "string",
