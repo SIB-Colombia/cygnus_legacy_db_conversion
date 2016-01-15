@@ -98,9 +98,6 @@ client.connect(function(err) {
 		INNER JOIN "public".subadministrativa ON "public".subadministrativa.pais_abreviatura = "public".pais.pais_abreviatura \
 		INNER JOIN "public".tiposub ON "public".subadministrativa.tiposub_id = "public".tiposub.tiposub_id \
 		INNER JOIN "public".ciudadmunicipio ON "public".ciudadmunicipio.pais_abreviatura = "public".subadministrativa.pais_abreviatura AND "public".ciudadmunicipio.sub_abreviatura = "public".subadministrativa.sub_abreviatura AND "public".referentegeografico.id_pais = "public".ciudadmunicipio.pais_abreviatura AND "public".referentegeografico.id_sub = "public".ciudadmunicipio.sub_abreviatura AND "public".referentegeografico.id_cm = "public".ciudadmunicipio.ciudad_municipio_abreviatura \
-		WHERE \
-		"public".pcaat_ce.taxonnombre IS NOT NULL AND \
-		"public".pcaat_ce.taxoncompleto IS NOT NULL \
 		ORDER BY catalogoespecies_id', function(err, result) {
 		if(err) {
 			return console.error('error running query', err);
@@ -109,11 +106,25 @@ client.connect(function(err) {
 		async.eachSeries(result.rows, function(n,callback) {
 			async.series({
 				fillInitialData: function(callback) {
-					var extractTaxonomy = n.taxoncompleto.split('>>');
-					var species = '';
-					var specificEpithet = '';
-					if((typeof extractTaxonomy[1]) !== "undefined") {
-						// Ficha posee taxonomia
+					var extractTaxonomy = ((typeof n.taxoncompleto) !== "undefined" && (n.taxoncompleto) !== null)?n.taxoncompleto.split('>>'):null;
+					var reino = null;
+					var filo = null;
+					var clase = null;
+					var orden = null;
+					var familia = null;
+					var genero = null;
+					var species = null;
+					var specificEpithet = null;
+					var autor = n.pcaat_ce_autor;
+
+					if(extractTaxonomy !== null) {
+						reino = ((typeof extractTaxonomy[0]) !== "undefined")?extractTaxonomy[0].replace('Reino','').trim():null;
+						filo = ((typeof extractTaxonomy[1]) !== "undefined")?extractTaxonomy[1].replace('Phylum','').replace('División','').trim():null;
+						clase = ((typeof extractTaxonomy[2]) !== "undefined")?extractTaxonomy[2].replace('Clase','').trim():null;
+						orden = ((typeof extractTaxonomy[3]) !== "undefined")?extractTaxonomy[3].replace('Orden','').trim():null;
+						familia = ((typeof extractTaxonomy[4]) !== "undefined")?extractTaxonomy[4].replace('Familia','').trim():null;
+						genero = ((typeof extractTaxonomy[5]) !== "undefined")?extractTaxonomy[5].replace('Género','').trim():null;
+						autor = ((typeof extractTaxonomy[8]) !== "undefined") ? extractTaxonomy[8].trim() : n.pcaat_ce_autor;
 
 						// Get species and specific epithet data
 						if ((typeof extractTaxonomy[6]) !== "undefined") {
@@ -124,91 +135,91 @@ client.connect(function(err) {
 								species = ((typeof extractTaxonomy[7]) !== "undefined")?extractTaxonomy[7].trim():'';
 							}
 						}
-						ficha = {
-							catalogoEspeciesId: n.catalogoespecies_id,
-							fechaActualizacion: n.fechaactualizacion,
-							fechaElaboracion: n.fechaelaboracion,
-							tituloMetadato: n.titulometadato,
-							jerarquiaNombresComunes: n.jerarquianombrescomunes,
-							active: n.active,
-							licenciaInfo: n.licenciaInfo,
-							taxonNombre: n.taxonnombre,
-							taxonCompleto: n.taxoncompleto,
-							taxonomia: {
-								reino: extractTaxonomy[0].replace('Reino','').trim(),
-								filo: extractTaxonomy[1].replace('Phylum','').replace('División','').trim(),
-								clase: ((typeof extractTaxonomy[2]) !== "undefined")?extractTaxonomy[2].replace('Clase','').trim():'',
-								orden: ((typeof extractTaxonomy[3]) !== "undefined")?extractTaxonomy[3].replace('Orden','').trim():'',
-								familia: ((typeof extractTaxonomy[4]) !== "undefined")?extractTaxonomy[4].replace('Familia','').trim():'',
-								genero: ((typeof extractTaxonomy[5]) !== "undefined")?extractTaxonomy[5].replace('Género','').trim():'',
-								epitetoEspecifico: specificEpithet,
-								especie: species
-							},
-							paginaweb: n.paginaweb,
-							autor: ((typeof extractTaxonomy[8]) !== "undefined") ? extractTaxonomy[8].trim() : n.pcaat_ce_autor,
-							verificacion: {
-								email: n.email_verifica,
-								emailResponsable: n.email_responsable_verifica,
-								fecha: n.fecha_verifica,
-								estadoId: n.verificado_estado_id,
-								nombre: n.verificado_nombre,
-								descripcion: n.verificado_descripcion,
-								validoInd: n.verificado_valido_ind
-							},
-							"citacion": {
-								citacionId: n.citacion_citacion_id,
-								sistemaclasificacionInd: n.citacion_sistemaclasificacion_ind,
-								fecha: n.citacion_fecha,
-								documentoTitulo: n.citacion_documento_titulo,
-								autor: n.citacion_autor,
-								editor: n.citacion_editor,
-								publicador: n.citacion_publicador,
-								editorial: n.citacion_editorial,
-								lugarPublicacion: n.citacion_lugar_publicacion,
-								edicionVersion: n.citacion_edicion_version,
-								volumen: n.citacion_volumen,
-								serie: n.citacion_serie,
-								numero: n.citacion_numero,
-								paginas: n.citacion_paginas,
-								hipervinculo: n.citacion_hipervinculo,
-								fechaActualizacion: n.citacion_fecha_actualizacion,
-								fechaConsulta: n.citacion_fecha_consulta,
-								otros: n.citacion_otros,
-								tipoId: n.citaciontipo_citaciontipo_id,
-								tipoNombre: n.citaciontipo_citaciontipo_nombre,
-								tipoSuperiorInd: n.citaciontipo_citacionsuperior_ind,
-								tipoSerieSuperiorInd: n.citaciontipo_serie_o_citacionsuperior_ind
-							},
-							"contacto": {
-								contactoId: n.contactos_contacto_id,
-								direccion: n.contactos_direccion,
-								telefono: n.contactos_telefono,
-								acronimo: n.contactos_acronimo,
-								persona: n.contactos_persona,
-								fax: n.contactos_fax,
-								correoElectronico: n.contactos_correo_electronico,
-								organizacion: n.contactos_organizacion,
-								cargo: n.contactos_cargo,
-								instrucciones: n.contactos_instrucciones,
-								horaInicial: n.contactos_hora_inicial,
-								horaFinal: n.contactos_hora_final,
-								idReferenteGeografico: n.referentegeografico_id_referente_geografico,
-								poblacionDane: n.referentegeografico_poblacion_dane,
-								intruccionesAcceso: n.referentegeografico_intruccionesacceso,
-								localidadHistorica: n.referentegeografico_localidadhistorica,
-								paisAbreviatura: n.pais_pais_abreviatura,
-								paisNombre: n.pais_pais_nombre,
-								subAbreviatura: n.subadministrativa_sub_abreviatura,
-								subNombre: n.subadministrativa_sub_nombre,
-								saDane: n.subadministrativa_sa_dane,
-								tipoSubId: n.tiposub_tiposub_id,
-								tipoSubNombre: n.tiposub_tiposub_nombre,
-								ciudadMunicipioAbreviatura: n.ciudadmunicipio_ciudad_municipio_abreviatura,
-								ciudadMunicipioNombre: n.ciudadmunicipio_ciudad_municipio_nombre,
-								ciudadMunicipioDane: n.ciudadmunicipio_cm_dane
-							}
-						};
 					}
+					ficha = {
+						catalogoEspeciesId: n.catalogoespecies_id,
+						fechaActualizacion: n.fechaactualizacion,
+						fechaElaboracion: n.fechaelaboracion,
+						tituloMetadato: n.titulometadato,
+						jerarquiaNombresComunes: n.jerarquianombrescomunes,
+						active: n.active,
+						licenciaInfo: n.licenciaInfo,
+						taxonNombre: n.taxonnombre,
+						taxonCompleto: n.taxoncompleto,
+						taxonomia: {
+							reino: reino,
+							filo: filo,
+							clase: clase,
+							orden: orden,
+							familia: familia,
+							genero: genero,
+							epitetoEspecifico: specificEpithet,
+							especie: species
+						},
+						paginaweb: n.paginaweb,
+						autor: autor,
+						verificacion: {
+							email: n.email_verifica,
+							emailResponsable: n.email_responsable_verifica,
+							fecha: n.fecha_verifica,
+							estadoId: n.verificado_estado_id,
+							nombre: n.verificado_nombre,
+							descripcion: n.verificado_descripcion,
+							validoInd: n.verificado_valido_ind
+						},
+						"citacion": {
+							citacionId: n.citacion_citacion_id,
+							sistemaclasificacionInd: n.citacion_sistemaclasificacion_ind,
+							fecha: ((/^\d{4}$/.test(n.citacion_fecha.trim())) === true)?n.citacion_fecha.trim():null,
+							documentoTitulo: n.citacion_documento_titulo,
+							autor: n.citacion_autor,
+							editor: n.citacion_editor,
+							publicador: n.citacion_publicador,
+							editorial: n.citacion_editorial,
+							lugarPublicacion: n.citacion_lugar_publicacion,
+							edicionVersion: n.citacion_edicion_version,
+							volumen: n.citacion_volumen,
+							serie: n.citacion_serie,
+							numero: n.citacion_numero,
+							paginas: n.citacion_paginas,
+							hipervinculo: n.citacion_hipervinculo,
+							fechaActualizacion: n.citacion_fecha_actualizacion,
+							fechaConsulta: n.citacion_fecha_consulta,
+							otros: n.citacion_otros,
+							tipoId: n.citaciontipo_citaciontipo_id,
+							tipoNombre: n.citaciontipo_citaciontipo_nombre,
+							tipoSuperiorInd: n.citaciontipo_citacionsuperior_ind,
+							tipoSerieSuperiorInd: n.citaciontipo_serie_o_citacionsuperior_ind
+						},
+						"contacto": {
+							contactoId: n.contactos_contacto_id,
+							direccion: n.contactos_direccion,
+							telefono: n.contactos_telefono,
+							acronimo: n.contactos_acronimo,
+							persona: n.contactos_persona,
+							fax: n.contactos_fax,
+							correoElectronico: n.contactos_correo_electronico,
+							organizacion: n.contactos_organizacion,
+							cargo: n.contactos_cargo,
+							instrucciones: n.contactos_instrucciones,
+							horaInicial: n.contactos_hora_inicial,
+							horaFinal: n.contactos_hora_final,
+							idReferenteGeografico: n.referentegeografico_id_referente_geografico,
+							poblacionDane: n.referentegeografico_poblacion_dane,
+							intruccionesAcceso: n.referentegeografico_intruccionesacceso,
+							localidadHistorica: n.referentegeografico_localidadhistorica,
+							paisAbreviatura: n.pais_pais_abreviatura,
+							paisNombre: n.pais_pais_nombre,
+							subAbreviatura: n.subadministrativa_sub_abreviatura,
+							subNombre: n.subadministrativa_sub_nombre,
+							saDane: n.subadministrativa_sa_dane,
+							tipoSubId: n.tiposub_tiposub_id,
+							tipoSubNombre: n.tiposub_tiposub_nombre,
+							ciudadMunicipioAbreviatura: n.ciudadmunicipio_ciudad_municipio_abreviatura,
+							ciudadMunicipioNombre: n.ciudadmunicipio_ciudad_municipio_nombre,
+							ciudadMunicipioDane: n.ciudadmunicipio_cm_dane
+						}
+					};
 					callback();
 				},
 				getCommonNamesData: function(callback) {
@@ -233,14 +244,14 @@ client.connect(function(err) {
 								_.forEach(result.rows, function(n2,key2) {
 									ficha.nombresComunes[key2] = {
 										tesauroId: n2.id_tesauros,
-										tesauroNombre: n2.tesauronombre,
+										tesauroNombre: n2.tesauronombre.trim(),
 										grupoHumano: n2.grupohumano,
 										idioma: n2.idioma,
 										regionesGeograficas: n2.regionesgeograficas,
 										paginaWeb: n2.paginaweb,
 										tesauroCompleto: n2.tesaurocompleto
 									};
-									ficha.listaNombresComunes.push(n2.tesauronombre);
+									ficha.listaNombresComunes.push(n2.tesauronombre.trim());
 								});
 							}
 						}
@@ -580,7 +591,7 @@ client.connect(function(err) {
 										}
 										ficha.imagenes.push({
 											source: 'legacy',
-											url: n2.valorAtributo
+											url: 'http://www.biodiversidad.co:3000/imagen/resampled/'+ficha.catalogoEspeciesId+'/'+n2.valorAtributo.split('.')[0]+'_270x270.'+n2.valorAtributo.split('.')[1]
 										});
 									} else if (n2.idAtributo === 40) {
 										// Este id corresponde a imagen
@@ -669,7 +680,7 @@ client.connect(function(err) {
 										ficha.atributos.referenciasBibliograficas.push({
 											citacionId: n2.citacion_id,
 											sistemaclasificacionInd: n2.sistemaclasificacion_ind,
-											fecha: n2.fecha,
+											fecha: ((/^\d{4}$/.test(n2.fecha.trim())) === true)?n2.fecha.trim():null,
 											documentoTitulo: n2.documento_titulo,
 											autor: n2.autor,
 											editor: n2.editor,
@@ -907,8 +918,16 @@ client.connect(function(err) {
 								if((typeof ficha.imagenes) === 'undefined') {
 									ficha.imagenes = [];
 								}
+								ficha.imagenesExternas = [];
 								_.forEach(result.rows, function(n2,key2) {
 									ficha.imagenes.push({
+										license: n2.imagelicense,
+										rights: n2.imagerights,
+										rightsHolder: n2.imagerightsholder,
+										source: n2.imagesource,
+										url: n2.imageurl
+									});
+									ficha.imagenesExternas.push({
 										license: n2.imagelicense,
 										rights: n2.imagerights,
 										rightsHolder: n2.imagerightsholder,
@@ -928,6 +947,9 @@ client.connect(function(err) {
 							type: 'catalog',
 							body: ficha
 						}, function (error, response) {
+							if(error) {
+								console.log(error);
+							}
 							callback();
 						});
 					} else {

@@ -613,10 +613,12 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 						"index": "not_analyzed"
 					},
 					"horaInicial": {
-						"type": "date"
+						"type": "date",
+						"format": "HH:mm:ss"
 					},
 					"horaFinal": {
-						"type": "date"
+						"type": "date",
+						"format": "HH:mm:ss"
 					},
 					"idReferenteGeografico": {
 						"type": "long"
@@ -891,6 +893,31 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 				}
 			},
 			"imagenes": {
+				"type": "nested",
+				"properties": {
+					"license": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"rights": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"rightsHolder": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"source": {
+						"type": "string",
+						"index": "not_analyzed"
+					},
+					"url": {
+						"type": "string",
+						"index": "not_analyzed"
+					}
+				}
+			},
+			"imagenesExternas": {
 				"type": "nested",
 				"properties": {
 					"license": {
@@ -1671,10 +1698,12 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"index": "not_analyzed"
 							},
 							"horaInicial": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							},
 							"horaFinal": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							}
 						}
 					},
@@ -1766,10 +1795,12 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"index": "not_analyzed"
 							},
 							"horaInicial": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							},
 							"horaFinal": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							}
 						}
 					},
@@ -1861,10 +1892,12 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"index": "not_analyzed"
 							},
 							"horaInicial": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							},
 							"horaFinal": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							}
 						}
 					},
@@ -1956,10 +1989,12 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 								"index": "not_analyzed"
 							},
 							"horaInicial": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							},
 							"horaFinal": {
-								"type": "date"
+								"type": "date",
+								"format": "HH:mm:ss"
 							}
 						}
 					},
