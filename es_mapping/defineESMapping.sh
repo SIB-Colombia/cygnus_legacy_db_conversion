@@ -702,6 +702,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			},
 			"nombresComunes": {
 				"type": "nested",
+				"include_in_parent": true,
 				"properties": {
 					"tesauroId": {
 						"type": "long"
@@ -894,6 +895,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			},
 			"imagenes": {
 				"type": "nested",
+				"include_in_parent": true,
 				"properties": {
 					"license": {
 						"type": "string",
@@ -919,6 +921,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 			},
 			"imagenesExternas": {
 				"type": "nested",
+				"include_in_parent": true,
 				"properties": {
 					"license": {
 						"type": "string",
@@ -1612,6 +1615,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					},
 					"autores": {
 						"type": "nested",
+						"include_in_parent": true,
 						"properties": {
 							"contactoId": {
 								"type": "long"
@@ -1709,6 +1713,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					},
 					"revisores": {
 						"type": "nested",
+						"include_in_parent": true,
 						"properties": {
 							"contactoId": {
 								"type": "long"
@@ -1806,6 +1811,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					},
 					"editores": {
 						"type": "nested",
+						"include_in_parent": true,
 						"properties": {
 							"contactoId": {
 								"type": "long"
@@ -1903,6 +1909,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					},
 					"colaboradores": {
 						"type": "nested",
+						"include_in_parent": true,
 						"properties": {
 							"contactoId": {
 								"type": "long"
@@ -2000,6 +2007,7 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					},
 					"referenciasBibliograficas": {
 						"type": "nested",
+						"include_in_parent": true,
 						"properties": {
 							"citacionId": {
 								"type": "long"
