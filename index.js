@@ -6,7 +6,7 @@ var _ = require('lodash');
 var async = require('async');
 var elasticsearch = require('elasticsearch');
 
-var conString = 'postgres://postgres:'+process.env.POSTGRES_PASSWORD+'@'+process.env.POSTGRES_SERVER+'/catalogo';
+var conString = 'postgres://'+process.env.POSTGRES_USER+':'+process.env.POSTGRES_PASSWORD+'@'+process.env.POSTGRES_SERVER+'/catalogo';
 
 var clientElastic = new elasticsearch.Client({
   host: 'localhost:9200'
@@ -338,6 +338,55 @@ client.connect(function(err) {
 								ficha['distribucionGeografica']['organizaciones'] = [];
 								_.forEach(result.rows, function(n2,key2) {
 									ficha.distribucionGeografica.organizaciones.push(n2.organizaciones);
+								});
+							}
+						}
+						callback();
+					});
+				},
+				getCollections: function(callback) {
+					client.query('SELECT \
+						"public".humedales_y_paramos.tipo AS "tipo", \
+						"public".catalogoespecies.catalogoespecies_id \
+						FROM \
+						"public".catalogoespecies \
+						INNER JOIN "public".humedales_y_paramos ON "public".humedales_y_paramos.catalogoespecies_id = "public".catalogoespecies.catalogoespecies_id \
+						WHERE \
+						"public".catalogoespecies.catalogoespecies_id = '+n.catalogoespecies_id, function(err, result) {
+						if((typeof result !== 'undefined')) {
+							if(result.rows.length > 0) {
+								// this registry has collections
+								if((typeof ficha['colecciones'] === 'undefined')) {
+									ficha['colecciones'] = [];
+								}
+								_.forEach(result.rows, function(n2,key2) {
+									ficha['colecciones'].push({
+										tipo: n2.tipo
+									});
+								});
+							}
+						}
+						callback();
+					});
+				},
+				getInvasoras: function(callback) {
+					client.query('SELECT \
+						"public".invasoras.catalogoespecies_id \
+						FROM \
+						"public".catalogoespecies \
+						INNER JOIN "public".invasoras ON "public".catalogoespecies.catalogoespecies_id = "public".invasoras.catalogoespecies_id \
+						WHERE \
+						"public".catalogoespecies.catalogoespecies_id = '+n.catalogoespecies_id, function(err, result) {
+						if((typeof result !== 'undefined')) {
+							if(result.rows.length > 0) {
+								// this registry has collections
+								if((typeof ficha['colecciones'] === 'undefined')) {
+									ficha['colecciones'] = [];
+								}
+								_.forEach(result.rows, function(n2,key2) {
+									ficha['colecciones'].push({
+										tipo: 'Invasora'
+									});
 								});
 							}
 						}

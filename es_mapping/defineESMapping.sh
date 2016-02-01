@@ -700,6 +700,31 @@ curl -XPUT 'http://localhost:9200/biodiversity/_mapping/catalog' -d '
 					}
 				}
 			},
+			"colecciones": {
+				"type": "nested",
+				"include_in_parent": true,
+				"properties": {
+					"tipo": {
+						"type": "string",
+						"index": "analyzed",
+						"analyzer": "spanish_search_analyzer",
+						"fields": {
+							"untouched": {
+								"type": "string",
+								"index": "not_analyzed"
+							},
+							"exactWords": {
+								"type": "string",
+								"analyzer": "string_lowercase"
+							},
+							"spanish": {
+								"type": "string",
+								"analyzer": "spanish_search_analyzer"
+							}
+						}
+					}
+				}
+			},
 			"nombresComunes": {
 				"type": "nested",
 				"include_in_parent": true,

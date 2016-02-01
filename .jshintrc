@@ -10,6 +10,7 @@
 	"validthis": true,
 	"jasmine": true,
 	"node": true,
+	"multistr": true,
 	"globals": {
 		"angular": false,
 		"inject": false,
